@@ -1,0 +1,570 @@
+﻿<concurrent:AsyncPage
+    xmlns:concurrent="clr-namespace:DGP.Genshin.Control.Infrastructure.Concurrent"
+    x:Class="DGP.Genshin.Page.UserPage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:s="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:c="clr-namespace:DGP.Genshin.Control.Infrastructure.CachedImage"
+    xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    xmlns:helper="clr-namespace:DGP.Genshin.Control.Helper"
+    xmlns:infrastructure="clr-namespace:DGP.Genshin.Control.Infrastructure"
+    mc:Ignorable="d" 
+    d:DesignHeight="450"
+    d:DesignWidth="900"
+    Title="UserPage">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OpenUICommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Page.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+        <Style TargetType="ui:ToggleSwitch" BasedOn="{StaticResource CardToggleSwitchStyle}"/>
+    </Page.Resources>
+    <TabControl
+        Style="{StaticResource TabControlPivotStyle}" 
+        ItemContainerStyle="{StaticResource PivotItemStyle}">
+        <TabControl.Resources>
+            <Thickness x:Key="PivotHeaderItemMargin">12,0,0,0</Thickness>
+        </TabControl.Resources>
+        <ui:PivotHelper.RightHeader>
+            <ui:CommandBar Background="Transparent">
+                <ui:AppBarButton Label="添加新账号" Command="{Binding AddUserCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:FontIcon Glyph="&#xE8FA;"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+                <ui:AppBarButton Label="删除该账号" Command="{Binding RemoveUserCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:FontIcon Glyph="&#xE74D;"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+                <ui:AppBarButton Label="复制Cookie" Command="{Binding CopyCookieCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:FontIcon Glyph="&#xE8C8;"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+                <ui:AppBarSeparator Margin="-10,0"/>
+                <ui:AppBarButton Label="立即刷新" Icon="Refresh" Command="{Binding RefreshCommand}"/>
+            </ui:CommandBar>
+        </ui:PivotHelper.RightHeader>
+        <TabItem Header="状态">
+            <s:SmoothScrollViewer>
+                <StackPanel Margin="12,0,12,12">
+                    <TextBlock Text="账号" Style="{StaticResource BaseTextBlockStyle}" Margin="0,16,0,0"/>
+                    <infrastructure:DesiredWidthUniformGrid ColumnDesiredWidth="272"  Margin="-12,0,0,0">
+                        <ComboBox
+                            HorizontalAlignment="Stretch"
+                            Margin="12,12,0,0"
+                            Height="60.8"
+                            ItemsSource="{Binding CookieUserInfos}" 
+                            SelectedItem="{Binding SelectedCookieUserInfo}" >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid RenderOptions.BitmapScalingMode="Fant">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse
+                                            Grid.Column="0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center" 
+                                            Width="32"
+                                            Height="32"
+                                            Margin="0,0,6,0">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding UserInfo.AvatarUrl}"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <Ellipse
+                                            Grid.Column="0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center" 
+                                            Width="48"
+                                            Height="48"
+                                            Margin="0,0,6,0">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding UserInfo.Pendant,FallbackValue={x:Null}}"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock
+                                                Text="{Binding UserInfo.Nickname}"
+                                                Style="{StaticResource BaseTextBlockStyle}"
+                                                TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock
+                                                Text="{Binding UserInfo.Uid}"
+                                                Margin="0,2,0,0"
+                                                Style="{StaticResource CaptionTextBlockStyle}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <ComboBox
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding CookieUserGameRoles}"
+                            SelectedItem="{Binding SelectedCookieUserGameRole,Mode=TwoWay}"
+                            Margin="12,12,0,0"
+                            Height="60.8"/>
+                    </infrastructure:DesiredWidthUniformGrid>
+                    <TextBlock
+                        Text="实时便笺"
+                        Style="{StaticResource BaseTextBlockStyle}"
+                        Margin="0,36,0,0"/>
+                    <infrastructure:DesiredWidthUniformGrid
+                        ColumnDesiredWidth="272"
+                        Margin="-12,0,0,0">
+                        <wu:Card Padding="0" Margin="12,12,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ui:ProgressBar 
+                                    Opacity="0.2"
+                                    Grid.ColumnSpan="2"
+                                    VerticalAlignment="Stretch" 
+                                    Background="Transparent"
+                                    Value="{Binding DailyNote.CurrentResin}"
+                                    Minimum="0" 
+                                    Maximum="{Binding DailyNote.MaxResin}"/>
+                                <Image
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    Source="pack://application:,,,/Resources/Icon/UI_ItemIcon_210.png"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="12,0,6,0"/>
+                                <StackPanel Grid.Column="1" Margin="6">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource TitleTextBlockStyle}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}/{1}">
+                                                <Binding Path="DailyNote.CurrentResin"/>
+                                                <Binding Path="DailyNote.MaxResin"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        Text="{Binding DailyNote.ResinRecoveryTargetTimeFormatted,StringFormat={}{0}}" 
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"/>
+                                </StackPanel>
+                            </Grid>
+                        </wu:Card>
+                        <wu:Card Padding="0" Margin="12,12,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ui:ProgressBar
+                                    Opacity="0.2"
+                                    Grid.ColumnSpan="2"
+                                    VerticalAlignment="Stretch" 
+                                    Background="Transparent"
+                                    Value="{Binding DailyNote.CurrentHomeCoin}"
+                                    Minimum="0" 
+                                    Maximum="{Binding DailyNote.MaxHomeCoin}"/>
+                                <Image
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    Source="pack://application:,,,/Resources/Icon/UI_ItemIcon_204.png"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="12,0,6,0"/>
+                                <StackPanel Grid.Column="1" Margin="6">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource TitleTextBlockStyle}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}/{1}">
+                                                <Binding Path="DailyNote.CurrentHomeCoin"/>
+                                                <Binding Path="DailyNote.MaxHomeCoin"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        Text="{Binding DailyNote.HomeCoinRecoveryTargetTimeFormatted,StringFormat={}{0}}" 
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"/>
+                                </StackPanel>
+                            </Grid>
+                        </wu:Card>
+                        <wu:Card Padding="0" Margin="12,12,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ui:ProgressBar
+                                    Opacity="0.2"
+                                    Grid.ColumnSpan="2"
+                                    VerticalAlignment="Stretch" 
+                                    Background="Transparent"
+                                    Value="{Binding DailyNote.FinishedTaskNum}"
+                                    Minimum="0" 
+                                    Maximum="{Binding DailyNote.TotalTaskNum}"/>
+                                <Image
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    Source="pack://application:,,,/Resources/Icon/UI_MarkQuest_Events_Proce.png"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="12,0,6,0"/>
+                                <StackPanel Grid.Column="1" Margin="6">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource TitleTextBlockStyle}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}/{1}">
+                                                <Binding Path="DailyNote.FinishedTaskNum"/>
+                                                <Binding Path="DailyNote.TotalTaskNum"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        Text="{Binding DailyNote.ExtraTaskRewardDescription,StringFormat={}{0}}" 
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"/>
+                                </StackPanel>
+                            </Grid>
+                        </wu:Card>
+                        <wu:Card Padding="0" Margin="12,12,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ui:ProgressBar
+                                    Opacity="0.2"
+                                    Grid.ColumnSpan="2"
+                                    VerticalAlignment="Stretch" 
+                                    Background="Transparent"
+                                    Value="{Binding DailyNote.ResinDiscountUsedNum,Mode=OneWay}"
+                                    Minimum="0" 
+                                    Maximum="{Binding DailyNote.ResinDiscountNumLimit}"/>
+                                <Image
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    Source="pack://application:,,,/Resources/Icon/UI_MarkTower.png"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="12,0,6,0"/>
+                                <StackPanel Grid.Column="1" Margin="6">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource TitleTextBlockStyle}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}/{1}">
+                                                <Binding Path="DailyNote.ResinDiscountUsedNum"/>
+                                                <Binding Path="DailyNote.ResinDiscountNumLimit"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        Text="本周已使用消耗减半次数" 
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"/>
+                                </StackPanel>
+                            </Grid>
+                        </wu:Card>
+                        <wu:Card Padding="0" Margin="12,12,0,0" Height="60.8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Image
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    Source="pack://application:,,,/Resources/Icon/UI_ItemIcon_220021.png"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="12,0,6,0"/>
+                                <StackPanel Grid.Column="1" Margin="6" VerticalAlignment="Center">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Text="{Binding DailyNote.Transformer.RecoveryTime.ReachedFormatted}"
+                                        Style="{StaticResource TitleTextBlockStyle}"/>
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        Text="{Binding DailyNote.Transformer.RecoveryTime.TimeFormatted}"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"/>
+                                </StackPanel>
+                            </Grid>
+                        </wu:Card>
+                        <wu:Card Padding="0" Margin="12,12,0,0" Height="60.8">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <ItemsControl
+                                    Grid.Row="1"
+                                    Margin="0,0,0,0"
+                                    ItemsSource="{Binding DailyNote.Expeditions}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="5"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="2,0,2,0">
+                                                <c:CachedImage
+                                                    Width="32"
+                                                    Height="32"
+                                                    ImageUrl="{Binding AvatarSideIcon}"/>
+                                                <TextBlock
+                                                    Margin="0,0,0,0"
+                                                    Grid.Column="1"
+                                                    VerticalAlignment="Bottom"
+                                                    HorizontalAlignment="Center"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    TextWrapping="NoWrap"
+                                                    Text="{Binding RemainedTimeFormatted,StringFormat={}{0}}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </wu:Card>
+                    </infrastructure:DesiredWidthUniformGrid>
+                    
+                    <TextBlock
+                        Text="旅行札记"
+                        Style="{StaticResource BaseTextBlockStyle}"
+                        Margin="0,36,0,0"/>
+                    <infrastructure:DesiredWidthUniformGrid
+                        ColumnDesiredWidth="272"
+                        Margin="-12,0,0,0">
+                        <wu:Card
+                            Padding="0"
+                            Margin="12,12,0,0"
+                            Height="60.8">
+                            <StackPanel>
+                                <TextBlock
+                                    Margin="6"
+                                    Text="今日共获取"
+                                    Style="{StaticResource BaseTextBlockStyle}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                        <c:CachedImage
+                                            Margin="6,0,0,0"
+                                            Height="24"
+                                            Width="24"
+                                            ImageUrl="https://webstatic.mihoyo.com/upload/event/2020/09/29/97a77a51901207ba1c4b167d7484742b_879413631620747219.png"/>
+                                        <TextBlock
+                                            Margin="6,0"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="{Binding JourneyInfo.DayData.CurrentPrimogems,StringFormat={}{0}}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                        <c:CachedImage
+                                            Margin="6,0,0,0"
+                                            Height="24"
+                                            Width="24"
+                                            ImageUrl="https://webstatic.mihoyo.com/upload/event/2020/09/29/65bb84b6cfe567a52495cbd814dc0729_3166173192087337217.png"/>
+                                        <TextBlock
+                                            Margin="6,0"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="{Binding JourneyInfo.DayData.CurrentMora,StringFormat={}{0}}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </wu:Card>
+                        <wu:Card Padding="0" Margin="12,12,0,0" Height="60.8">
+                            <StackPanel>
+                                <TextBlock
+                                    Margin="6"
+                                    Text="当月共获取"
+                                    Style="{StaticResource BaseTextBlockStyle}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                        <c:CachedImage
+                                            Margin="6,0,0,0"
+                                            Height="24"
+                                            Width="24"
+                                            ImageUrl="https://webstatic.mihoyo.com/upload/event/2020/09/29/97a77a51901207ba1c4b167d7484742b_879413631620747219.png"/>
+                                        <TextBlock
+                                            Margin="6,0"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="{Binding JourneyInfo.MonthData.CurrentPrimogems,StringFormat={}{0}}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                        <c:CachedImage
+                                            Margin="6,0,0,0"
+                                            Height="24"
+                                            Width="24"
+                                            ImageUrl="https://webstatic.mihoyo.com/upload/event/2020/09/29/65bb84b6cfe567a52495cbd814dc0729_3166173192087337217.png"/>
+                                        <TextBlock
+                                            Margin="6,0"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="{Binding JourneyInfo.MonthData.CurrentMora,StringFormat={}{0}}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </wu:Card>
+                    </infrastructure:DesiredWidthUniformGrid>
+                </StackPanel>
+            </s:SmoothScrollViewer>
+        </TabItem>
+        <TabItem Header="设置">
+            <s:SmoothScrollViewer>
+                <StackPanel Grid.Row="1" MaxWidth="1000" Margin="0,0,0,12">
+                    <TextBlock
+                        Text="实时便笺"
+                        Style="{StaticResource BaseTextBlockStyle}"
+                        Margin="12,16,0,0"/>
+                    <wu:CardControl
+                        helper:IconHelper.Icon="&#xE72C;"
+                        Title="实时便笺刷新时间"
+                        Subtitle="设置实时便笺后台的刷新间隔时间（需要启用托盘图标）"
+                        Margin="12,12,16,0">
+                        <ComboBox
+                            ItemsSource="{Binding ResinAutoRefreshTimes,Mode=OneWay}"
+                            SelectedItem="{Binding SelectedResinAutoRefreshTime}"
+                            DisplayMemberPath="Name"/>
+                    </wu:CardControl>
+                    <wu:CardControl
+                        helper:IconHelper.Icon="&#xE7E7;"
+                        Title="提醒式通知"
+                        Subtitle="防止实时便笺通知自动收入操作中心"
+                        Margin="12,4,16,0">
+                        <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.KeepNotificationFront}"/>
+                    </wu:CardControl>
+                    
+                    <wu:CardExpander
+                        Header="原粹树脂提醒"
+                        Subtitle="当原粹树脂到达或超过某一数值时提醒我"
+                        Margin="12,6,16,0">
+                        <StackPanel>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="20"
+                                Subtitle="当我的树脂到达或超过 20 时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnResinReach20}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="40"
+                                Subtitle="当原粹树脂到达或超过 40 时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnResinReach40}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="80"
+                                Subtitle="当原粹树脂到达或超过 80 时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnResinReach80}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="120"
+                                Subtitle="当原粹树脂到达或超过 120 时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnResinReach120}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="155"
+                                Subtitle="当原粹树脂到达或超过 155 时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnResinReach155}"/>
+                            </wu:CardControl>
+                        </StackPanel>
+                    </wu:CardExpander>
+                    <wu:CardExpander Header="其他提醒" Subtitle="其他很有用的提醒" Margin="12,4,16,0">
+                        <StackPanel>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="洞天宝钱"
+                                Subtitle="当洞天宝钱到达或超过 80% 最大容量时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnHomeCoinReach80Percent}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="参量质变仪"
+                                Subtitle="当参量质变仪准备好时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnTransformerReady}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="每日任务"
+                                Subtitle="当每日任务未完成或完成但未领取奖励时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnDailyTasksIncomplete}"/>
+                            </wu:CardControl>
+                            <wu:CardControl
+                                BorderBrush="{x:Null}"
+                                Background="Transparent"
+                                Title="探索派遣"
+                                Subtitle="当探索派遣全部完成时提醒我">
+                                <ui:ToggleSwitch IsOn="{Binding DailyNoteNotifyConfiguration.NotifyOnExpeditionsComplete}"/>
+                            </wu:CardControl>
+                        </StackPanel>
+                    </wu:CardExpander>
+
+                    <TextBlock
+                        Text="签到"
+                        Style="{StaticResource BaseTextBlockStyle}"
+                        Margin="12,36,0,0"/>
+                    <wu:CardControl
+                        helper:IconHelper.Icon="&#xE73E;"
+                        Title="自动签到"
+                        Subtitle="每日首次启动时签到，如果存在多个账号，所有账号的均会依次签到"
+                        Margin="12,12,16,0">
+                        <ui:ToggleSwitch IsOn="{Binding AutoDailySignInOnLaunch}"/>
+                    </wu:CardControl>
+                    <wu:CardControl
+                        helper:IconHelper.Icon="&#xE8EE;"
+                        Title="立即全部签到"
+                        Subtitle="立即对所有账号下的所有角色进行签到"
+                        Margin="12,4,16,0">
+                        <Button Content="签到" Command="{Binding SignInImmediatelyCommand}"/>
+                    </wu:CardControl>
+                    <wu:CardControl
+                        helper:IconHelper.Icon="&#xE7ED;"
+                        Title="静默签到"
+                        Subtitle="签到通知直接进入通知中心，不再直接弹出"
+                        Margin="12,6,16,0">
+                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding SignInSilently}"/>
+                    </wu:CardControl>
+                </StackPanel>
+            </s:SmoothScrollViewer>
+        </TabItem>
+    </TabControl>
+</concurrent:AsyncPage>

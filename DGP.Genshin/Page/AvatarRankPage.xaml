@@ -1,0 +1,272 @@
+﻿<concurrent:AsyncPage
+    xmlns:concurrent="clr-namespace:DGP.Genshin.Control.Infrastructure.Concurrent"
+    x:Class="DGP.Genshin.Page.AvatarRankPage"
+    x:ClassModifier="internal"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DGP.Genshin.Page"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:s="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+      xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+      xmlns:c="clr-namespace:DGP.Genshin.Control.Infrastructure.CachedImage"
+      xmlns:r="clr-namespace:DGP.Genshin.Control.GenshinElement.Record"
+    xmlns:genshinelement="clr-namespace:DGP.Genshin.Control.GenshinElement"
+    xmlns:ci="clr-namespace:DGP.Genshin.Control.Infrastructure.CachedImage"
+    xmlns:helper ="clr-namespace:DGP.Genshin.Control.Helper" xmlns:infrastructure="clr-namespace:DGP.Genshin.Control.Infrastructure"
+    mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="AvatarRankPage">
+    <Grid>
+        <TabControl 
+            Style="{StaticResource TabControlPivotStyle}"
+            Visibility="{Binding Showcase,Converter={StaticResource DataVisibilityRevertConverter}}">
+            <TabControl.Resources>
+                <Thickness x:Key="PivotHeaderItemMargin">12,0,0,0</Thickness>
+            </TabControl.Resources>
+            <ui:PivotHelper.RightHeader>
+                <StackPanel
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center">
+                    <ui:ProgressRing
+                        x:Name="RequestingProgressRing"
+                        Margin="12,0,12,0" 
+                        IsActive="{Binding QueryCommand.IsRunning}"
+                        d:IsActive="true"/>
+                    <ui:AutoSuggestBox
+                        Text="{Binding CurrentUid}"
+                        Margin="0,0,16,0"
+                        MinWidth="160" 
+                        PlaceholderText="键入UID以查询" 
+                        QueryIcon="Find"
+                        QuerySubmitted="AutoSuggestBox_QuerySubmitted"/>
+                </StackPanel>
+            </ui:PivotHelper.RightHeader>
+            <TabItem Header="基本信息">
+                <s:SmoothScrollViewer Padding="12,0,16,0">
+                    <StackPanel>
+                        <wu:Card Margin="0,8,0,0" Padding="0,0,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="362"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Ellipse
+                                        Fill="#FFDAB79B"
+                                        Width="64"
+                                        Height="64"
+                                        Margin="12"
+                                        Grid.Column="1"
+                                        SnapsToDevicePixels="True"
+                                        HorizontalAlignment="Center"/>
+                                    <Border
+                                    ci:ImageAsyncHelper.ImageUrl="{Binding Showcase.Player.ProfilePicture}"
+                                        Grid.Column="1"
+                                        RenderOptions.BitmapScalingMode="Fant"
+                                        SnapsToDevicePixels="True"
+                                        CornerRadius="50"
+                                        Height="64"
+                                        Width="64"
+                                        BorderBrush="#FFFFFFFF"
+                                        BorderThickness="2"
+                                        HorizontalAlignment="Center"
+                                        Margin="6"/>
+                                </Grid>
+                                <StackPanel
+                                    Margin="12,12,0,0"
+                                    Grid.Column="1"
+                                    VerticalAlignment="Top">
+                                    <TextBlock
+                                        Style="{StaticResource TitleTextBlockStyle}"
+                                        Text="{Binding Showcase.Player.NickName}"/>
+                                    <TextBlock
+                                        Margin="0,8,0,0"
+                                        Text="{Binding Showcase.Player.Signature}"/>
+                                </StackPanel>
+
+                                <UniformGrid
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Columns="4"
+                                    Margin="12,0,12,0">
+                                    <StackPanel>
+                                        <TextBlock
+                                        Text="冒险等阶"
+                                        Style="{StaticResource BaseTextBlockStyle}"/>
+                                        <TextBlock
+                                        Margin="0,8,0,0"
+                                        Text="{Binding Showcase.Player.Level}"/>
+                                    </StackPanel>
+
+                                    <StackPanel>
+                                        <TextBlock
+                                        Text="世界等级"
+                                        Style="{StaticResource BaseTextBlockStyle}"/>
+                                        <TextBlock
+                                        Margin="0,8,0,0"
+                                        Text="{Binding Showcase.Player.WorldLevel}"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock
+                                        Text="完成成就"
+                                        Style="{StaticResource BaseTextBlockStyle}"/>
+                                        <TextBlock
+                                        Margin="0,8,0,0"
+                                        Text="{Binding Showcase.Player.AchievementNumber}"/>
+                                    </StackPanel>
+
+                                    <StackPanel>
+                                        <TextBlock
+                                        Text="深境螺旋"
+                                        Style="{StaticResource BaseTextBlockStyle}"/>
+                                        <TextBlock
+                                        Margin="0,8,0,0"
+                                        Text="{Binding Showcase.Player.SpiralAbyss}"/>
+                                    </StackPanel>
+                                </UniformGrid>
+                            </Grid>
+
+                        </wu:Card>
+
+                        
+                        <ItemsControl
+                            Margin="0,12,-12,0"
+                            ItemsSource="{Binding Showcase.Avatars}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <infrastructure:DesiredWidthUniformGrid ColumnDesiredWidth="240"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!--立绘-->
+                                    <Border
+                                        VerticalAlignment="Top"
+                                        Margin="0,0,12,12"
+                                        CornerRadius="{StaticResource CompatCornerRadius}">
+                                        <Border.Background>
+                                            <ImageBrush 
+                                                ImageSource="pack://application:,,,/DGP.Genshin;component/Resources/UI_GachaSettlement_Bg2.png"
+                                                Stretch="UniformToFill"/>
+                                        </Border.Background>
+                                        <Border 
+                                            CornerRadius="{StaticResource CompatCornerRadius}"
+                                            RenderOptions.BitmapScalingMode="Fant"
+                                            ci:ImageAsyncHelper.ImageUrl="{Binding BaseCharacter.GachaCard}" 
+                                            ci:ImageAsyncHelper.StretchMode="UniformToFill"
+                                            MinHeight="400"
+                                            ClipToBounds="True"
+                                            Padding="0">
+                                            <Border
+                                                CornerRadius="{StaticResource CompatCornerRadius}"
+                                                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                                                Padding="12">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    
+                                                    <Grid VerticalAlignment="Top" Margin="0,0,0,12">
+                                                        <TextBlock
+                                                            VerticalAlignment="Top"
+                                                            Style="{StaticResource SubtitleTextBlockStyle}"
+                                                            Text="{Binding BaseCharacter.Name,FallbackValue=???}"/>
+
+                                                        <TextBlock
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            Style="{StaticResource BodyTextBlockStyle}"
+                                                            Text="{Binding Level,StringFormat={}Lv.{0}}"/>
+                                                    </Grid>
+                                                    <Rectangle
+                                                        Grid.Row="1"
+                                                        VerticalAlignment="Top"
+                                                        Height="1"
+                                                        Fill="{StaticResource SystemControlForegroundBaseMediumLowBrush}"/>
+                                                    <Grid Margin="0,12,0,12"  Grid.Row="1">
+                                                        <TextBlock
+                                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                                        Text="双暴评分"/>
+                                                        <TextBlock
+                                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                                        HorizontalAlignment="Right"
+                                                                        Text="{Binding CritScore,StringFormat={}{0:F3}}"
+                                                                        Opacity="0.7"/>
+                                                    </Grid>
+                                                    <Rectangle
+                                                        Grid.Row="2"
+                                                        VerticalAlignment="Top"
+                                                        Height="1"
+                                                        Fill="{StaticResource SystemControlForegroundBaseMediumLowBrush}"/>
+                                                    <ItemsControl
+                                                        VerticalAlignment="Top"
+                                                        Margin="0,0,0,0"
+                                                        Grid.Row="2"
+                                                        ItemsSource="{Binding Stats}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Grid Margin="0,12,0,0">
+                                                                    <TextBlock
+                                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                                        Text="{Binding Name}"/>
+                                                                    <TextBlock
+                                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                                        HorizontalAlignment="Right"
+                                                                        Text="{Binding Value}"
+                                                                        Opacity="0.7"/>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Grid>
+                                            </Border>
+                                        </Border>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </s:SmoothScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <Border 
+            Visibility="{Binding Showcase,Converter={StaticResource DataVisibilityConverter}}"
+            d:Visibility="Visible">
+            <StackPanel
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                MaxWidth="480">
+                <ui:AutoSuggestBox
+                    Text="{Binding CurrentUid}"
+                    Margin="0,0,0,0"
+                    MinWidth="240" 
+                    PlaceholderText="键入UID以查询" 
+                    QueryIcon="Find"
+                    QuerySubmitted="AutoSuggestBox_QuerySubmitted"/>
+                <TextBlock
+                    Margin="0,12,0,12"
+                    HorizontalAlignment="Center"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap"
+                    Text="角色橱窗功能为实验性功能验证，不会完全受到我们的支持，&#10;后续不会考虑在 Snap Genshin 中加入圣遗物与武器展示。"/>
+                <genshinelement:ElementsProgressBar
+                    Visibility="{Binding QueryCommand.IsRunning,Converter={StaticResource BooleanToVisibilityConverter}}"
+                    IsIndeterminate="{Binding QueryCommand.IsRunning}"
+                    Margin="0,6,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</concurrent:AsyncPage>

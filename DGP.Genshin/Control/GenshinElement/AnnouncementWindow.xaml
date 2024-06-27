@@ -1,0 +1,21 @@
+﻿<Window x:Class="DGP.Genshin.Control.GenshinElement.AnnouncementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DGP.Genshin.Control.GenshinElement"
+        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        ui:TitleBar.Style="{DynamicResource AppTitleBarStyle}"
+        mc:Ignorable="d"
+        Title="活动详情" 
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" Width="1128" Height="800"
+        Loaded="WindowLoaded"
+        Background="{DynamicResource SystemControlPageBackgroundChromeLowBrush}">
+    <Grid>
+        <wpf:WebView2
+            x:Name="WebView"/>
+    </Grid>
+</Window>

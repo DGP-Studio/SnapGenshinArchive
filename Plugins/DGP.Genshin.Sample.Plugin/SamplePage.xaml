@@ -1,0 +1,36 @@
+﻿<Page x:Class="DGP.Genshin.Sample.Plugin.SamplePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:smoothscrollviewer="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer;assembly=DGP.Genshin"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SamplePage">
+    <Grid>
+        <smoothscrollviewer:SmoothScrollViewer>
+            <ItemsControl ItemsSource="{Binding Icons}"
+                    VerticalAlignment="Top"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                    VirtualizingStackPanel.IsVirtualizing="True"
+                    VirtualizingStackPanel.VirtualizationMode="Recycling">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="7" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="12">
+                        <ui:FontIcon FontSize="32" Glyph="{Binding Glyph}"/>
+                        <TextBlock HorizontalAlignment="Center" Margin="0,12,0,0" Text="{Binding Data,StringFormat={}0x{0:X4}}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        </smoothscrollviewer:SmoothScrollViewer>
+        
+    </Grid>
+</Page>

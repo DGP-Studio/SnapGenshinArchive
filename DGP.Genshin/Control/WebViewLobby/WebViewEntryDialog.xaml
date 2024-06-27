@@ -1,0 +1,25 @@
+﻿<ui:ContentDialog 
+    x:Class="DGP.Genshin.Control.WebViewLobby.WebViewEntryDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:DGP.Genshin.Control.WebViewLobby"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    mc:Ignorable="d" 
+    d:DesignHeight="800" d:DesignWidth="800"
+    Title="自定义网页"
+    DefaultButton="Primary"
+    PrimaryButtonText="确认"
+    SecondaryButtonText="取消">
+    <StackPanel>
+        <TextBox ui:ControlHelper.Header="网址" Text="{Binding NavigateUrl}"/>
+        <TextBox ui:ControlHelper.Header="标题" Text="{Binding EntryName}" Margin="0,12,0,0"/>
+        <TextBox ui:ControlHelper.Header="图标Url" Text="{Binding IconUrl}" Margin="0,6,0,0"/>
+        <Button Content="自动获取标题与图标" Margin="0,6,0,0" HorizontalAlignment="Stretch" Click="AutoTitleIconButtonClick"/>
+        <TextBox ui:ControlHelper.Header="JavaScript 脚本" Height="120" ui:ControlHelper.PlaceholderText="页面加载完成后执行,可以留空" 
+                 TextWrapping="Wrap" MaxLines="128" AcceptsReturn="True"
+                 Text="{Binding JavaScript}" Margin="0,12,0,0"/>
+        <CheckBox IsChecked="{Binding ShowInNavView}" Content="添加到导航栏"/>
+    </StackPanel>
+</ui:ContentDialog>

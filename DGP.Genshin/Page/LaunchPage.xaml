@@ -1,0 +1,184 @@
+﻿<Page
+    x:Class="DGP.Genshin.Page.LaunchPage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:s="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+    xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    xmlns:helper="clr-namespace:DGP.Genshin.Control.Helper"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    mc:Ignorable="d" 
+    d:DesignHeight="1300"
+    d:DesignWidth="800"
+    Title="LaunchPage">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OpenUICommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                <Setter Property="MinWidth" Value="140"/>
+            </Style>
+            <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="MinWidth" Value="140"/>
+            </Style>
+            <Style TargetType="ui:NumberBox">
+                <Setter Property="MinWidth" Value="140"/>
+            </Style>
+            <Style TargetType="ui:ToggleSwitch" BasedOn="{StaticResource CardToggleSwitchStyle}"/>
+        </Grid.Resources>
+        <s:SmoothScrollViewer>
+            <StackPanel Margin="12,12,16,12" MaxWidth="1000">
+                <wu:CardControl
+                    Visibility="{Binding GameWatcher.IsWorking,Converter={StaticResource BooleanToVisibilityConverter}}"
+                    helper:IconHelper.Icon="&#xE7FC;"
+                    Title="游戏正在运行中"
+                    Subtitle="当前无法继续启动游戏"
+                    Margin="0,0,0,36"
+                    CommandParameter="Game"
+                    Background="#99008000"
+                    BorderBrush="#CC006400"/>
+                <TextBlock
+                    Text="启动"
+                    Style="{StaticResource BaseTextBlockStyle}"/>
+                <wu:CardAction
+                    IsEnabled="{Binding GameWatcher.IsWorking,Converter={StaticResource BooleanRevertConverter}}"
+                    helper:IconHelper.Icon="&#xE7FC;"
+                    helper:CardHelper.ActionTitle="游戏本体"
+                    helper:CardHelper.ActionSubtitle="以下方的自定义设置启动游戏"
+                    Margin="0,12,0,0"
+                    Command="{Binding LaunchCommand}"
+                    CommandParameter="Game"/>
+                <wu:CardAction
+                    IsEnabled="{Binding GameWatcher.IsWorking,Converter={StaticResource BooleanRevertConverter}}"
+                    helper:IconHelper.Icon="&#xED35;"
+                    helper:CardHelper.ActionTitle="官方启动器"
+                    helper:CardHelper.ActionSubtitle="游戏有版本更新时方便打开"
+                    Margin="0,4,0,0"
+                    Command="{Binding LaunchCommand}"
+                    CommandParameter="Launcher"/>
+                <TextBlock
+                    Text="常规"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="0,36,0,0"/>
+                <wu:CardExpander
+                    helper:IconHelper.Icon="&#xE748;"
+                    Margin="0,12,0,0"
+                    IsExpanded="True"
+                    Header="{Binding SelectedAccount.Name,StringFormat={}当前账号{0}}"
+                    Subtitle="在游戏内切换账号/更改游戏内设置/网络环境发生变化/后需要重新手动检测">
+                    <wu:CardExpander.HeaderContent>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="检测" Command="{Binding MatchAccountCommand}" Margin="0,0,12,0" MinWidth="60"/>
+                            <Button Content="重命名" Command="{Binding RenameAccountCommand}" Margin="0,0,12,0" MinWidth="60"/>
+                            <Button Content="删除" Command="{Binding DeleteAccountCommand}" Margin="0,0,12,0" MinWidth="60"/>
+                        </StackPanel>
+                    </wu:CardExpander.HeaderContent>
+                    <ui:ListView
+                        ItemsSource="{Binding Accounts}" 
+                        SelectedItem="{Binding SelectedAccount}"
+                        SelectionMode="Single"
+                        DisplayMemberPath="Name"
+                        Padding="0,0,0,4"/>
+                </wu:CardExpander>
+
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE8E6;"
+                    Title="重选官方启动器路径"
+                    Subtitle="重新选择你的官方启动器存放路径"
+                    Margin="0,4,0,0">
+                    <Button
+                        Content="重置"
+                        Command="{Binding ReselectLauncherPathCommand}"/>
+                </wu:CardControl>
+
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE8AB;"
+                    Title="服务器"
+                    Subtitle="切换游戏服务器，Bilibili服用户需要自备额外的SDK文件"
+                    Margin="0,12,0,0">
+                    <ComboBox
+                        Margin="12,0,0,0"
+                        HorizontalAlignment="Stretch" 
+                        ItemsSource="{Binding KnownSchemes}"
+                        SelectedItem="{Binding CurrentScheme}"
+                        DisplayMemberPath="Name"/>
+                </wu:CardControl>
+
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE8A5;"
+                    Title="切换说明"
+                    Subtitle="切换官服与B服的详细说明"
+                    Margin="0,4,0,0">
+                    <wu:Hyperlink
+                        Content="切换教程"
+                        NavigateUri="https://www.snapgenshin.com/documents/features/account-switch.html"
+                        Padding="4"/>
+                </wu:CardControl>
+
+                <TextBlock
+                    Text="外观"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="0,36,0,0"/>
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE740;"
+                    Title="全屏"
+                    Subtitle="覆盖默认的全屏状态"
+                    Margin="0,12,0,0">
+                    <ui:ToggleSwitch IsOn="{Binding IsFullScreen}"/>
+                </wu:CardControl>
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE737;"
+                    Title="无边框"
+                    Subtitle="将窗口创建为弹出窗口，不带框架"
+                    Margin="0,4,0,0"
+                    IsEnabled="{Binding IsFullScreen,Converter={StaticResource BooleanRevertConverter}}">
+                    <ui:ToggleSwitch IsOn="{Binding IsBorderless}"/>
+                </wu:CardControl>
+
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE76F;"
+                    Title="宽度"
+                    Subtitle="覆盖默认屏幕宽度"
+                    Margin="0,6,0,0">
+                    <ui:NumberBox Value="{Binding ScreenWidth,Mode=TwoWay}"/>
+                </wu:CardControl>
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE784;"
+                    Title="高度" Subtitle="覆盖默认屏幕高度" Margin="0,4,0,0">
+                    <ui:NumberBox Value="{Binding ScreenHeight,Mode=TwoWay}"/>
+                </wu:CardControl>
+
+                <TextBlock
+                    Text="怂别用，用别怂"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="0,36,0,0"
+                    Foreground="DarkRed"/>
+                <wu:CardExpander
+                    helper:IconHelper.Icon="&#xE785;"
+                    Header="解锁帧率上限"
+                    Subtitle="需要以管理员模式启动，解锁60帧上限"
+                    IsExpanded="True"
+                    Margin="0,12,0,0"
+                    IsEnabled="{Binding IsElevated}">
+                    <wu:CardExpander.HeaderContent>
+                        <ui:ToggleSwitch IsOn="{Binding UnlockFPS}" Margin="12,0"/>
+                    </wu:CardExpander.HeaderContent>
+                    <Slider
+                        Margin="12,6"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        ui:ControlHelper.Header="{Binding RelativeSource={RelativeSource Self},Path=Value}"
+                        Minimum="60"
+                        Maximum="360"
+                        Value="{Binding TargetFPS}"/>
+                </wu:CardExpander>
+            </StackPanel>
+        </s:SmoothScrollViewer>
+    </Grid>
+</Page>

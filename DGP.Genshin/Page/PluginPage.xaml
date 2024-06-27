@@ -1,0 +1,107 @@
+﻿<Page x:Class="DGP.Genshin.Page.PluginPage" x:ClassModifier="internal"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DGP.Genshin.Page"
+      mc:Ignorable="d" 
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:smoothscrollviewer="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+      xmlns:infrastructure="clr-namespace:DGP.Genshin.Control.Infrastructure"
+      xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PluginPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ui:CommandBar Background="Transparent">
+            <ui:CommandBar.Content>
+                <TextBlock Margin="12,12,0,0" Text="我们会在启动时加载插件"/>
+            </ui:CommandBar.Content>
+            <ui:AppBarButton Label="可用插件列表" Command="{Binding OpenPluginListLinkCommand}">
+                <ui:AppBarButton.Icon>
+                    <ui:FontIcon Glyph="&#xE8A7;"/>
+                </ui:AppBarButton.Icon>
+            </ui:AppBarButton>
+                             
+            <ui:AppBarButton Label="打开插件文件夹" Command="{Binding OpenPluginFolderCommand}">
+                <ui:AppBarButton.Icon>
+                    <ui:FontIcon Glyph="&#xED25;"/>
+                </ui:AppBarButton.Icon>
+            </ui:AppBarButton>
+        </ui:CommandBar>
+        <smoothscrollviewer:SmoothScrollViewer Grid.Row="1" Padding="12,0,4,0">
+            <ItemsControl Margin="0,12,0,0" VerticalAlignment="Top"
+                ItemsSource="{Binding Plugins}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <infrastructure:DesiredWidthUniformGrid ColumnDesiredWidth="360"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Height="160"
+                            CornerRadius="{StaticResource CompatCornerRadius}" 
+                            Background="{StaticResource SystemControlPageBackgroundAltHighBrush}"
+                            Margin="0,0,12,12">
+                            <Grid Margin="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Text="{Binding Name}" 
+                                        Style="{StaticResource SubtitleTextBlockStyle}" />
+                                    <Button
+                                        Command="{Binding SettingCommand}"
+                                        Visibility="{Binding IsSettingSupported,Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}"
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                        Content="&#xE713;"
+                                        HorizontalAlignment="Right"
+                                        Padding="6"
+                                        Background="Transparent"
+                                        ToolTipService.ToolTip="设置"/>
+                                </Grid>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,12,0,0"
+                                    Text="{Binding Description}"
+                                    TextWrapping="Wrap"
+                                    TextTrimming="CharacterEllipsis"
+                                    Style="{StaticResource CaptionTextBlockStyle}"/>
+                                <Grid Grid.Row="2" Margin="0,6,0,0">
+                                    <TextBlock Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center">
+                                        <Run Text="作者："/>
+                                        <Run
+                                            Text="{Binding Author,Mode=OneWay}"
+                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                                    </TextBlock>
+                                    <StackPanel
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right">
+                                        <TextBlock
+                                            Text="{Binding Version}"
+                                            VerticalAlignment="Center"/>
+                                        <wu:Hyperlink
+                                            Margin="8,0,0,0"
+                                            Content="详情"
+                                            NavigateUri="{Binding DetailLink}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </smoothscrollviewer:SmoothScrollViewer>
+    </Grid>
+</Page>

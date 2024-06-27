@@ -1,0 +1,331 @@
+﻿<Page
+    x:Class="DGP.Genshin.Page.SettingPage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:s="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+    xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:helper="clr-namespace:DGP.Genshin.Control.Helper"
+    xmlns:markdown="clr-namespace:DGP.Genshin.Control.Infrastructure.Markdown"
+    mc:Ignorable="d" 
+    d:DesignHeight="2000" 
+    d:DesignWidth="800"
+    Title="设置">
+    <Page.Resources>
+        <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+        <Style TargetType="ui:ToggleSwitch" BasedOn="{StaticResource CardToggleSwitchStyle}"/>
+
+        <markdown:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter">
+            <markdown:TextToFlowDocumentConverter.Markdown>
+                <markdown:Markdown
+                    DocumentStyle="{StaticResource DocumentStyle}"
+                    Heading1Style="{StaticResource H1Style}"
+                    Heading2Style="{StaticResource H2Style}"
+                    Heading3Style="{StaticResource H3Style}"
+                    Heading4Style="{StaticResource H4Style}"
+                    LinkStyle="{StaticResource LinkStyle}"
+                    ImageStyle="{StaticResource ImageStyle}"
+                    SeparatorStyle="{StaticResource SeparatorStyle}"
+                    TableStyle="{StaticResource TableStyle}"
+                    TableHeaderStyle="{StaticResource TableHeaderStyle}"/>
+            </markdown:TextToFlowDocumentConverter.Markdown>
+        </markdown:TextToFlowDocumentConverter>
+    </Page.Resources>
+    <Grid>
+        <s:SmoothScrollViewer>
+            <StackPanel
+                Margin="0,0,0,12"
+                MaxWidth="1000">
+                <TextBlock
+                    Text="外观"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="12,0,0,0"/>
+                
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE790;"
+                    Title="主题"
+                    Subtitle="更改应用的主题颜色"
+                    Margin="12,12,16,0">
+                    <ComboBox
+                        ItemsSource="{Binding Themes}"
+                        SelectedItem="{Binding SelectedTheme}"
+                        DisplayMemberPath="Name"/>
+                </wu:CardControl>
+                
+                <wu:CardAction 
+                    helper:IconHelper.Icon="&#xE838;" 
+                    helper:CardHelper.ActionTitle="打开背景图片文件夹" 
+                    helper:CardHelper.ActionSubtitle="仅支持 JPG PNG BMP 格式，重启后刷新图片路径缓存"
+                    Command="{Binding OpenBackgroundFolderCommand}"
+                    Margin="12,12,16,0"/>
+                <wu:CardExpander
+                    helper:IconHelper.Icon="&#xE793;"
+                    Header="背景不透明度"
+                    Subtitle="更改背景图片的不透明度"
+                    Margin="12,4,16,0">
+                    <wu:CardExpander.HeaderContent>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Slider
+                                Width="200"
+                                Maximum="1"
+                                Value="{Binding BackgroundOpacity,Mode=TwoWay}"
+                                TickFrequency="0.01"
+                                IsSnapToTickEnabled="True"/>
+                            <TextBlock
+                                Text="{Binding BackgroundOpacity,StringFormat={}{0:p0}}"
+                                VerticalAlignment="Center"
+                                Margin="12,0,0,0"
+                                Width="40"/>
+                        </StackPanel>
+                    </wu:CardExpander.HeaderContent>
+                    <StackPanel>
+                        <wu:CardControl
+                            helper:IconHelper.Icon="&#xE91B;"
+                            Title="高斯模糊"
+                            Subtitle="使图片以模糊形式呈现，下一张壁纸生效"
+                            Background="Transparent"
+                            BorderBrush="{x:Null}">
+                            <ui:ToggleSwitch IsOn="{Binding IsBackgroundBlurEnabled}"/>
+                        </wu:CardControl>
+                        <wu:CardControl
+                            helper:IconHelper.Icon="&#xF08C;"
+                            Title="自动调整"
+                            Subtitle="根据背景图片亮度自动调整不透明度"
+                            Background="Transparent"
+                            BorderBrush="{x:Null}">
+                            <ui:ToggleSwitch IsOn="{Binding IsBackgroundOpacityAdaptive}"/>
+                        </wu:CardControl>
+                    </StackPanel>
+                </wu:CardExpander>
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE786;"
+                    Title="切换壁纸"
+                    Subtitle="对当前的壁纸不满意？手动切换到下一张"
+                    Margin="12,4,16,0">
+                    <Button Content="下一张壁纸" Command="{Binding NextWallpaperCommand}"/>
+                </wu:CardControl>
+
+                <TextBlock
+                    Text="启动"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="12,36,0,0"/>
+                
+                <wu:CardExpander
+                    helper:IconHelper.Icon="&#xF71C;"
+                    Header="开机时启动"
+                    Subtitle="启用此项以便执行某些自动化操作,若设置了始终以管理员模式启动则不会生效"
+                    Margin="12,12,16,0">
+                    <wu:CardExpander.HeaderContent>
+                        <ui:ToggleSwitch IsOn="{Binding AutoRun.IsAutoRun}" Margin="12,0"/>
+                    </wu:CardExpander.HeaderContent>
+                    <wu:CardControl
+                        helper:IconHelper.Icon="&#xED1A;"
+                        Title="隐式初始化"
+                        Subtitle="首次初始化完成后立即关闭主窗口，仅在启用托盘图标后有效"
+                        Background="Transparent"
+                        BorderBrush="{x:Null}">
+                        <ui:ToggleSwitch IsOn="{Binding CloseMainWindowAfterInitializaion}"/>
+                    </wu:CardControl>
+                </wu:CardExpander>
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE9D5;"
+                    Title="跳过缓存完整性检查"
+                    Subtitle="启用此项可以加快启动速度，但也会带来很多图片加载问题"
+                    Margin="12,4,16,0">
+                    <ui:ToggleSwitch IsOn="{Binding SkipCacheCheck}"/>
+                </wu:CardControl>
+                
+                <TextBlock
+                    Text="祈愿记录"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="12,36,0,0"/>
+                
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE81C;"
+                    Title="显示未抽取的卡池信息"
+                    Subtitle="在祈愿记录界面的隶属页签中展示未进行抽取的卡池信息"
+                    Margin="12,12,16,0">
+                    <ui:ToggleSwitch IsOn="{Binding IsBannerWithNoItemVisible}"/>
+                </wu:CardControl>
+                
+                <TextBlock
+                    Text="高级"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="12,36,0,0"/>
+                
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xECAA;"
+                    Title="系统托盘图标"
+                    Subtitle="在系统托盘区域显示图标，下次启动时生效"
+                    Margin="12,12,16,0">
+                    <ui:ToggleSwitch IsOn="{Binding IsTaskBarIconEnabled}"/>
+                </wu:CardControl>
+                
+                <wu:CardAction 
+                    helper:IconHelper.Icon="&#xE950;" 
+                    helper:CardHelper.ActionTitle="应用服务实现" 
+                    helper:CardHelper.ActionSubtitle="配置应用的可更换服务实现"
+                    Command="{Binding OpenImplementationPageCommand}"
+                    Margin="12,4,16,0"/>
+
+                <wu:CardControl 
+                    helper:IconHelper.Icon="&#xEA86;" 
+                    Title="更新元数据" 
+                    Subtitle="更新用于呈现的元数据"
+                    Command="{Binding CheckMetadataCommand}"
+                    Margin="12,4,16,0">
+                    <Button Content="检查更新" Command="{Binding CheckMetadataCommand}"/>
+                </wu:CardControl>
+
+                <TextBlock
+                    Text="缓存"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="12,36,0,0"/>
+                
+                <wu:CardAction 
+                    helper:IconHelper.Icon="&#xE838;" 
+                    helper:CardHelper.ActionTitle="打开图片缓存文件夹" 
+                    helper:CardHelper.ActionSubtitle="大部分图片资源缓存在这个文件夹内" 
+                    Command="{Binding OpenCacheFolderCommand}"
+                    Margin="12,12,16,0"/>
+                <wu:CardControl 
+                    helper:IconHelper.Icon="&#xE8BA;" 
+                    Title="缓存角色资源" 
+                    Subtitle="缓存所有角色的图片资源,可能会花费数十分钟"
+                    Command="{Binding DownloadCharactersCacheCommand}"
+                    Margin="12,4,16,0">
+                    <Button
+                        Content="立即缓存"
+                        Command="{Binding DownloadCharactersCacheCommand}"
+                        Margin="12,0,0,0"/>
+                </wu:CardControl>
+                
+                <TextBlock
+                    Text="关于 Snap 原神"
+                    Style="{StaticResource BaseTextBlockStyle}"
+                    Margin="12,36,0,0"/>
+                <wu:CardExpander
+                    helper:IconHelper.Icon="&#xE946;"
+                    Header="Snap 原神"
+                    Subtitle="{Binding VersionString}"
+                    Margin="12,12,16,0">
+                    <wu:CardExpander.HeaderContent>
+                        <Button Content="检查更新" Command="{Binding CheckUpdateCommand}" Margin="12,0"/>
+                    </wu:CardExpander.HeaderContent>
+                    <FlowDocumentScrollViewer
+                        IsHitTestVisible="False"
+                        Document="{Binding ReleaseNote,Converter={StaticResource TextToFlowDocumentConverter}}"/>
+                </wu:CardExpander>
+                <wu:Card
+                    Margin="12,4,16,0"
+                    Visibility="{Binding UpdateInfo.IsDownloading,Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Text="下载更新中-请勿退出程序"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            HorizontalAlignment="Left"/>
+                        <TextBlock
+                            Text="{Binding UpdateInfo.ValueString}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            HorizontalAlignment="Right"/>
+                        <ProgressBar
+                            Margin="0,12,0,0"
+                            Grid.Row="1"
+                            Value="{Binding UpdateInfo.Value,Mode=OneWay}"
+                            Maximum="1"
+                            MinHeight="2"/>
+                    </Grid>
+                </wu:Card>
+
+                <!--CurrentUpdateAPI-->
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE72C;"
+                    Title="更新通道"
+                    Subtitle="不同的通道收到的更新频率会有所不同"
+                    Margin="12,4,16,0">
+                    <ComboBox
+                        ItemsSource="{Binding UpdateAPIs,Mode=OneWay}"
+                        SelectedItem="{Binding CurrentUpdateAPI}"
+                        DisplayMemberPath="Name"/>
+                </wu:CardControl>
+
+                <wu:CardAction 
+                    helper:IconHelper.Icon="&#xEB51;"
+                    helper:CardHelper.ActionTitle="赞助者名单" Command="{Binding SponsorUICommand}"
+                    helper:CardHelper.ActionSubtitle="如果你觉得 Snap Genshin 还不错，欢迎对我们进行赞助"
+                    Margin="12,12,16,0"
+                    BorderBrush="{StaticResource SystemControlBackgroundAccentBrush}"/>
+                
+                <wu:CardExpander
+                    helper:IconHelper.Icon="&#xED15;"
+                    Header="联系我们"
+                    Subtitle="如果你在使用软件的过程中遇到问题，或是单纯的想聊聊天，可以看看这里"
+                    Margin="12,4,16,0"
+                    IsExpanded="True">
+                    <wu:CardExpander.HeaderContent>
+                        <wu:Hyperlink
+                            Content="用户手册"
+                            NavigateUri="https://www.snapgenshin.com/home/"
+                            Padding="4"
+                            Margin="12,0"/>
+                    </wu:CardExpander.HeaderContent>
+                    <UniformGrid Columns="3" Margin="12,12,12,0">
+                        <wu:Hyperlink
+                            NavigateUri="https://github.com/DGP-Studio/Snap.Genshin/issues/new/choose" 
+                            Content="前往 Github 提交 Issue"
+                            Padding="4"
+                            Margin="0,0,0,12"/>
+                        <wu:Hyperlink
+                            NavigateUri="https://discord.gg/SHYdJbxJua" 
+                            Content="我们的 Discord 服务器"
+                            Padding="4"
+                            Margin="0,0,0,12"/>
+                        <wu:Hyperlink
+                            NavigateUri="https://jq.qq.com/?_wv=1027&amp;k=Wpcad0lD"
+                            Content="开发交流 982424236"
+                            Padding="4"
+                            Margin="0,0,0,12"/>
+                        <wu:Hyperlink
+                            NavigateUri="https://jq.qq.com/?_wv=1027&amp;k=MHLNhhYJ"
+                            Content="反馈1群 910780153"
+                            Padding="4"
+                            Margin="0,0,0,12"/>
+                        <wu:Hyperlink
+                            NavigateUri="https://jq.qq.com/?_wv=1027&amp;k=cgh9S2XW"
+                            Content="闲聊2群 547288075"
+                            Padding="4"
+                            Margin="0,0,0,12"/>
+                        <wu:Hyperlink
+                            NavigateUri="https://jq.qq.com/?_wv=1027&amp;k=IYl2vyTv"
+                            Content="闲聊3群 240095771"
+                            Padding="4"
+                            Margin="0,0,0,12"/>
+                    </UniformGrid>
+                </wu:CardExpander>
+                <wu:CardControl
+                    helper:IconHelper.Icon="&#xE772;"
+                    Title="用户设备ID"
+                    Subtitle="{Binding UserId}"
+                    Margin="12,4,16,0">
+                    <Button
+                        Content="复制到剪贴板"
+                        Margin="6,0,0,0"
+                        Command="{Binding CopyUserIdCommand}"/>
+                </wu:CardControl>
+            </StackPanel>
+        </s:SmoothScrollViewer>
+    </Grid>
+</Page>

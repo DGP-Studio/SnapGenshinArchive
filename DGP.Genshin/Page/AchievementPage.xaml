@@ -1,0 +1,189 @@
+﻿<ui:Page
+    x:Class="DGP.Genshin.Page.AchievementPage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:DGP.Genshin.Page"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    xmlns:smoothscrollviewer="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+    xmlns:c="clr-namespace:DGP.Genshin.Control.Infrastructure.CachedImage"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Unloaded="PageUnloaded"
+    Title="AchievementPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ui:CommandBar
+            IsOpen="False"
+            Height="40"
+            Background="Transparent">
+            <ui:CommandBar.Content>
+                <ToggleButton
+                    x:Name="PaneOpenButton"
+                    ui:ControlHelper.CornerRadius="0"
+                    Background="Transparent"
+                    Height="40"
+                    FontSize="16"
+                    IsChecked="True">
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} - {1:p2}">
+                                <Binding Path="SelectedAchievementGoal.Name"/>
+                                <Binding Path="CompletedProgress"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </ToggleButton>
+            </ui:CommandBar.Content>
+            
+            <ui:AppBarElementContainer>
+                <ui:AutoSuggestBox
+                    Margin="0,4,4,0"
+                    MinWidth="240" 
+                    PlaceholderText="搜索成就名称或描述" 
+                    QueryIcon="Find"
+                    TextChanged="AutoSuggestBoxTextChanged"
+                    QuerySubmitted="AutoSuggestBoxQuerySubmitted"/>
+            </ui:AppBarElementContainer>
+            <ui:CommandBar.SecondaryCommands>
+                <ui:AppBarToggleButton Label="优先未完成" Icon="Sort" IsChecked="{Binding IncompletedFirst}"/>
+                <ui:AppBarSeparator/>
+                <ui:AppBarButton Label="从 椰羊 导入" Command="{Binding ImportFromCocoGoatCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:BitmapIcon
+                            UriSource="pack://application:,,,/Resources/ThirdParty/cocogoat.ico"
+                            ShowAsMonochrome="False"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+                <ui:AppBarButton Label="从 剪贴板 导入" Command="{Binding ImportFromClipboardCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:FontIcon Glyph="&#xF0E3;"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+            </ui:CommandBar.SecondaryCommands>
+        </ui:CommandBar>
+        <ui:SplitView
+            Grid.Row="1"
+            OpenPaneLength="240"
+            DisplayMode="Inline"
+            PaneBackground="Transparent"
+            IsPaneOpen="{Binding ElementName=PaneOpenButton,Path=IsChecked}"
+            Focusable="False">
+            <ui:SplitView.Pane>
+                <smoothscrollviewer:SmoothScrollViewer>
+                    <ui:ListView
+                        Padding="0"
+                        ItemsSource="{Binding AchievementGoals,IsAsync=True}"
+                        SelectedItem="{Binding SelectedAchievementGoal}"
+                        DisplayMemberPath="Name">
+                    </ui:ListView>
+                </smoothscrollviewer:SmoothScrollViewer>
+            </ui:SplitView.Pane>
+            <ui:SplitView.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ProgressBar
+                        ui:ControlHelper.CornerRadius="0"
+                        Value="{Binding CompletedProgress}"
+                        Maximum="1"
+                        MinHeight="2"/>
+                    <smoothscrollviewer:SmoothScrollViewer Grid.Row="1">
+                        <ItemsControl
+                            ItemsSource="{Binding Achievements,IsAsync=True}"
+                            Margin="12,12,16,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <wu:Card Margin="0,0,0,12" Padding="8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <CheckBox
+                                                    MinWidth="32"
+                                                    Margin="6,0,6,2"
+                                                    IsChecked="{Binding IsCompleted}"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                    <c:CachedImage
+                                                    Margin="0,0,0,0"
+                                                    Height="32"
+                                                    Width="32"
+                                                    VerticalAlignment="Center"
+                                                    ImageUrl="https://webstatic.mihoyo.com/upload/event/2020/09/29/97a77a51901207ba1c4b167d7484742b_879413631620747219.png"/>
+                                                    <TextBlock
+                                                    Margin="6,0,0,0"
+                                                    Text="{Binding FinishRewardCount}"
+                                                    VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="{Binding Title}" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                                    <TextBlock Text="{Binding Description}" Margin="0,8,0,0"/>
+                                                </StackPanel>
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    Text="{Binding CompleteDateTime,StringFormat={}{0:yyyy/MM/dd}}"
+                                                    Visibility="{Binding IsCompleted,Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                    VerticalAlignment="Center"
+                                                    Margin="0,0,12,0"/>
+                                            </Grid>
+                                            <StackPanel
+                                                Grid.Row="1"
+                                                Visibility="{Binding Decomposition,Converter={StaticResource DataVisibilityRevertConverter}}">
+                                                <Rectangle
+                                                    Margin="6,16,6,0"
+                                                    VerticalAlignment="Top"
+                                                    Height="1"
+                                                    Fill="{StaticResource SystemControlForegroundBaseMediumLowBrush}"/>
+                                                <ItemsControl
+                                                    Grid.Row="1"
+                                                    Margin="0,12,0,0"
+                                                    ItemsSource="{Binding Decomposition.Steps}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox
+                                                                MinWidth="32"
+                                                                Margin="6,0,6,2"
+                                                                IsChecked="{Binding IsCompleted}"
+                                                                Content="{Binding Description}">
+                                                                <CheckBox.ContentTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock
+                                                                            Margin="10,0,0,0"
+                                                                            Text="{Binding}"
+                                                                            Style="{StaticResource BodyTextBlockStyle}"/>
+                                                                    </DataTemplate>
+                                                                </CheckBox.ContentTemplate>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Grid>
+                                        
+                                    </wu:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </smoothscrollviewer:SmoothScrollViewer>
+                </Grid>
+            </ui:SplitView.Content>
+        </ui:SplitView>
+    </Grid>
+</ui:Page>

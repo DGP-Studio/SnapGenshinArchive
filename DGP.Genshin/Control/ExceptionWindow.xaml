@@ -1,0 +1,75 @@
+﻿<observable:ObservableWindow
+    xmlns:observable="clr-namespace:DGP.Genshin.Control.Infrastructure.Observable"
+    x:Class="DGP.Genshin.Control.ExceptionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        xmlns:ui="http://schemas.modernwpf.com/2019" 
+        xmlns:smoothscrollviewer="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        ui:TitleBar.ExtendViewIntoTitleBar="True"
+        ui:TitleBar.Style="{DynamicResource AppTitleBarStyle}"
+        Background="{DynamicResource SystemControlPageBackgroundChromeLowBrush}"
+        Title="崩溃窗口" WindowStartupLocation="CenterScreen"
+        Height="750" Width="1000"
+        MinWidth="1000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Margin="12" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="0" Source="/Resources/UI_EmotionIcon72.png" Height="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Grid Grid.Column="1" Margin="24,0,4,0" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Text="似乎遇到了一些问题..." Style="{StaticResource SubheaderTextBlockStyle}"/>
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        VerticalAlignment="Center"
+                        Text="当你向技术人员反馈时，请提供复制的信息，而不是本窗口的截图"
+                        Foreground="Red"
+                        Style="{StaticResource CaptionTextBlockStyle}"/>
+                </StackPanel>
+                <ui:CommandBar HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent">
+                    <ui:AppBarButton Label="常见问题" Click="CommonIssueAppBarButtonClick">
+                        <ui:AppBarButton.Icon>
+                            <ui:FontIcon Glyph="&#xEBE8;"/>
+                        </ui:AppBarButton.Icon>
+                    </ui:AppBarButton>
+                                     
+                    <ui:AppBarButton Icon="Copy" Label="复制信息" Click="CopyInfoAppBarButtonClick"/>
+                </ui:CommandBar>
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="1" Margin="12,12,16,12">
+            <TextBlock Text="{Binding ExceptionType}" VerticalAlignment="Center" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="{Binding HResultCode,StringFormat={}错误代码：{0}}" Margin="0,12,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+        </StackPanel>
+        <smoothscrollviewer:SmoothScrollViewer Grid.Row="2" Padding="0,0,4,0">
+            <StackPanel>
+                <Border Margin="12,0,12,12" Padding="0,4" CornerRadius="{StaticResource CompatCornerRadius}" Background="{StaticResource SystemControlBackgroundChromeMediumBrush}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ExceptionObject.InnerException.Message}" Style="{StaticResource BodyTextBlockStyle}" Margin="12"/>
+                        <TextBlock Text="{Binding ExceptionObject.InnerException}" Style="{StaticResource CaptionTextBlockStyle}" Margin="12"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Margin="12,0,12,12" Padding="0,4" CornerRadius="{StaticResource CompatCornerRadius}" Background="{StaticResource SystemControlBackgroundChromeMediumBrush}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ExceptionObject.Message}" Style="{StaticResource BodyTextBlockStyle}" Margin="12"/>
+                        <TextBlock Text="{Binding ExceptionObject}" Style="{StaticResource CaptionTextBlockStyle}" Margin="12"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </smoothscrollviewer:SmoothScrollViewer>
+    </Grid>
+</observable:ObservableWindow>

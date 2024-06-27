@@ -1,0 +1,47 @@
+﻿<ui:ContentDialog 
+    xmlns:ui="http://schemas.modernwpf.com/2019" 
+    xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    x:Class="DGP.Genshin.Control.GenshinElement.HutaoStatistic.UploadDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:DGP.Genshin.Control.GenshinElement.HutaoStatistic"
+    xmlns:smoothscrollviewer="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800"
+    Title="将记录上传到胡桃数据库"
+    PrimaryButtonText="确认"
+    CloseButtonText="取消">
+    <StackPanel>
+        <wu:CardControl Title="UID" Subtitle="{Binding Uid}"/>
+        <wu:CardControl Title="角色" Subtitle="{Binding PlayerAvatars.Count,StringFormat={}{0} 个角色 &amp; 装备的武器 &amp; 装备的圣遗物}" Margin="0,12,0,0"/>
+        <wu:CardExpander Header="深境螺旋" Subtitle="{Binding PlayerSpiralAbyssesLevels.Count,StringFormat={}共 {0} 间的战斗记录 &amp; 参与战斗的角色}"
+                         Margin="0,12,0,0" IsExpanded="True">
+            <smoothscrollviewer:SmoothScrollViewer>
+                <ItemsControl ItemsSource="{Binding PlayerSpiralAbyssesLevels}" Padding="6,6,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="3"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <wu:Card Padding="6" Margin="0,0,6,6">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}-{1} {2}星">
+                                            <Binding Path="FloorIndex"/>
+                                            <Binding Path="LevelIndex"/>
+                                            <Binding Path="Star"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </wu:Card>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </smoothscrollviewer:SmoothScrollViewer>
+        </wu:CardExpander>
+    </StackPanel>
+</ui:ContentDialog>

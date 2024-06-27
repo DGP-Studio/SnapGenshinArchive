@@ -1,0 +1,482 @@
+﻿<ui:Page x:Class="DGP.Genshin.Page.WeaponPage" x:ClassModifier="internal"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+         xmlns:ui="http://schemas.modernwpf.com/2019" 
+         xmlns:s="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+         xmlns:ci="clr-namespace:DGP.Genshin.Control.Infrastructure.CachedImage"
+         xmlns:genshinelements="clr-namespace:DGP.Genshin.Control.GenshinElement" 
+         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+         xmlns:system="clr-namespace:System;assembly=netstandard"
+         xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+         xmlns:helper="clr-namespace:DGP.Genshin.Control.Helper"
+         mc:Ignorable="d" 
+         d:DesignHeight="450" d:DesignWidth="800"
+         x:Name="WeaponPageView">
+    <ui:Page.Resources>
+        <Style TargetType="{x:Type wu:CardExpander}" x:Key="DefaultCardExpanderStyle">
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}"/>
+            <Setter Property="IsExpanded" Value="False" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+            <Setter Property="MinHeight" Value="68" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type wu:CardExpander}">
+                        <Border
+                        x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4,4,4,4">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid
+                                    Grid.Row="0"
+                                    Margin="{TemplateBinding Padding}"
+                                    VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="52" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ci:CachedBitmapIcon x:Name="CardIcon"
+                                         Grid.Column="0"
+                                         MinWidth="0"
+                                         Margin="4,0,16,0"
+                                         MaxWidth="32"
+                                         MaxHeight="32"
+                                         VerticalAlignment="Center"
+                                         UriSource="{Binding Path=(helper:IconHelper.Icon),RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                    <Grid Grid.Column="1" VerticalAlignment="Center">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition x:Name="SubtitleRow" />
+                                        </Grid.RowDefinitions>
+                                        <ContentPresenter
+                                        x:Name="Title"
+                                        Grid.Row="0"
+                                        Margin="0,0,0,4"
+                                        ContentSource="Header"
+                                        TextElement.FontWeight="Medium"
+                                        TextElement.Foreground="{TemplateBinding Foreground}" />
+                                        <TextBlock
+                                        x:Name="Subtitle"
+                                        Grid.Row="1"
+                                        FontSize="11"
+                                            TextWrapping="Wrap"
+                                            TextTrimming="None"
+                                        Text="{TemplateBinding Subtitle}">
+                                            <TextBlock.Foreground>
+                                                <SolidColorBrush Color="{DynamicResource TextFillColorTertiary}" />
+                                            </TextBlock.Foreground>
+                                        </TextBlock>
+                                    </Grid>
+                                </Grid>
+
+                                <ToggleButton
+                                Grid.Row="0"
+                                MinHeight="{TemplateBinding MinHeight}"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Background="Transparent"
+                                Content="{TemplateBinding HeaderContent}"
+                                Foreground="{TemplateBinding Foreground}"
+                                IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                OverridesDefaultStyle="True"
+                                Template="{StaticResource UiCardExpanderToggleButton}" />
+
+                                <Border
+                                x:Name="ContentGrid"
+                                Grid.Row="1"
+                                Background="Transparent"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Opacity="0.0">
+                                    <ContentPresenter/>
+                                    <Border.LayoutTransform>
+                                        <ScaleTransform ScaleY="0" />
+                                    </Border.LayoutTransform>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="helper:IconHelper.Icon" Value="">
+                                <Setter TargetName="CardIcon" Property="Margin" Value="0" />
+                            </Trigger>
+                            <Trigger Property="Subtitle" Value="{x:Null}">
+                                <Setter TargetName="Title" Property="Margin" Value="0" />
+                                <Setter TargetName="SubtitleRow" Property="Height" Value="0" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                            Storyboard.TargetName="Border"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Opacity)"
+                                            From="1.0"
+                                            To="0.5"
+                                            Duration="0:0:.16" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                            Storyboard.TargetName="Border"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Opacity)"
+                                            From="0.5"
+                                            To="1.0"
+                                            Duration="0:0:.16" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="ContentGrid" Property="BorderThickness" Value="0,1,0,0" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                            Storyboard.TargetName="ContentGrid"
+                                            Storyboard.TargetProperty="(Border.LayoutTransform).(ScaleTransform.ScaleY)"
+                                            To="1"
+                                            Duration="0:0:0.16" />
+                                            <DoubleAnimation
+                                            Storyboard.TargetName="ContentGrid"
+                                            Storyboard.TargetProperty="(Border.Opacity)"
+                                            To="1.0"
+                                            Duration="0:0:0.16" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                            Storyboard.TargetName="ContentGrid"
+                                            Storyboard.TargetProperty="(Border.LayoutTransform).(ScaleTransform.ScaleY)"
+                                            To="0"
+                                            Duration="0:0:0.16" />
+                                            <DoubleAnimation
+                                            Storyboard.TargetName="ContentGrid"
+                                            Storyboard.TargetProperty="(Border.Opacity)"
+                                            To="0.0"
+                                            Duration="0:0:0.16" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type wu:Card}">
+            <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundAltHighBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type wu:Card}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Border
+                            x:Name="CardBorder"
+                            Grid.Row="0"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                                <ContentPresenter Margin="{TemplateBinding Padding}" />
+                            </Border>
+
+                            <Border
+                            x:Name="FooterBorder"
+                            Grid.Row="1"
+                            Padding="{TemplateBinding Padding}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="0,0,4,4"
+                            Visibility="Collapsed">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{DynamicResource ControlStrokeColorSecondary}" />
+                                </Border.Background>
+                                <ContentPresenter Content="{TemplateBinding Footer}" />
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasFooter" Value="True">
+                                <Setter TargetName="FooterBorder" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="CardBorder" Property="CornerRadius" Value="4,4,0,0" />
+                                <Setter TargetName="CardBorder" Property="BorderThickness" Value="1,1,1,0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ui:Page.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding WeaponInitializeCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <s:SmoothScrollViewer
+            Grid.Column="0"
+            Width="360"
+            VerticalScrollBarVisibility="Hidden">
+            <ui:GridView
+                HorizontalAlignment="Left" 
+                ItemsSource="{Binding Weapons}" 
+                SelectedItem="{Binding SelectedWeapon}"
+                ItemsPanel="{StaticResource WrapPanelItemsPanel}"
+                Margin="12,0,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <genshinelements:ContentIcon
+                            IsHitTestVisible="False"
+                            IsCountVisible="False"
+                            BackgroundUrl="{Binding Star}"
+                            ForegroundUrl="{Binding Source}"
+                            BadgeUrl="{Binding Type}"
+                            VerticalAlignment="Top"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ui:GridView>
+        </s:SmoothScrollViewer>
+        <s:SmoothScrollViewer
+            VerticalScrollBarVisibility="Hidden"
+            Grid.Column="1">
+            <StackPanel Margin="4,0,12,12">
+                <Border CornerRadius="{StaticResource CompatCornerRadius}">
+                    <Border.Background>
+                        <ImageBrush
+                            ImageSource="pack://application:,,,/DGP.Genshin;component/Resources/UI_GachaSettlement_Bg2.png"
+                            Stretch="UniformToFill"/>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Ellipse
+                                Fill="#FFDAB79B"
+                                Width="100"
+                                Height="100"
+                                Margin="6"
+                                SnapsToDevicePixels="True"
+                                HorizontalAlignment="Left"/>
+                            <Border
+                                ci:ImageAsyncHelper.ImageUrl="{Binding SelectedWeapon.Source}" 
+                                RenderOptions.BitmapScalingMode="Fant"
+                                SnapsToDevicePixels="True"
+                                CornerRadius="100"
+                                Height="100"
+                                Width="100"
+                                BorderBrush="{Binding SelectedWeapon.StarSolid}"
+                                BorderThickness="2"
+                                HorizontalAlignment="Left"
+                                Margin="6"/>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Margin="6"
+                                    Text="{Binding SelectedWeapon.Name}"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Foreground="#FFFFFFFF"/>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="6,6,24,6"
+                                    Foreground="#FFFFFFFF"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="{Binding SelectedWeapon.Description}"
+                                    TextWrapping="NoWrap"
+                                    TextTrimming="CharacterEllipsis"/>
+                                <UniformGrid
+                                    Columns="3"
+                                    Grid.Row="2"
+                                    Margin="3,0,3,6"
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Left">
+                                    <Border Height="35" Width="35" Margin="3,6">
+                                        <ci:CachedImage
+                                            Stretch="Uniform"
+                                            ImageUrl="{Binding SelectedWeapon.Ascension.Source}"/>
+                                    </Border>
+                                    <Border Height="35" Width="35" Margin="3,6">
+                                        <ci:CachedImage
+                                            Stretch="Uniform"
+                                            ImageUrl="{Binding SelectedWeapon.Elite.Source}"/>
+                                    </Border>
+                                    <Border Height="35" Width="35" Margin="3,6">
+                                        <ci:CachedImage
+                                            Stretch="Uniform"
+                                            ImageUrl="{Binding SelectedWeapon.Monster.Source}"/>
+                                    </Border>
+                                </UniformGrid>
+                            </Grid>
+
+                        </Grid>
+                    </Grid>
+                </Border>
+                <!--基础数值-->
+                <wu:CardExpander 
+                    Margin="0,12,0,0"
+                    helper:IconHelper.Icon="{Binding SelectedWeapon.Type}"
+                    Style="{StaticResource DefaultCardExpanderStyle}"
+                    Header="基础数值">
+                    <s:SmoothScrollViewer
+                        HorizontalScrollBarVisibility="Visible"
+                        VerticalScrollBarVisibility="Disabled">
+                        <Grid
+                            Margin="6,6,6,16" 
+                            HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="64"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="等级" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,6"/>
+                                <TextBlock Text="1" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="20" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="20+" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="40" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="40+" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="50" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="50+" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="60" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="60+" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="70" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="70+" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="80" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="80+" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="90" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                            </StackPanel>
+                            <ItemsControl
+                                ItemsSource="{Binding SelectedWeapon.WeaponStat}"
+                                HorizontalAlignment="Stretch" Grid.Column="1">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="2"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="6,0,0,0">
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,6"/>
+                                            <TextBlock Text="{Binding Value.Level1}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level20}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level20p}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level40}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level40p}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level50}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level50p}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level60}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level60p}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level70}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level70p}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level80}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level80p}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                            <TextBlock Text="{Binding Value.Level90}" Margin="0,4,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </s:SmoothScrollViewer>
+                </wu:CardExpander>
+
+                <wu:Card
+                    Margin="0,12,0,0"
+                    Padding="6"
+                    Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding SelectedWeapon.Passive}" Style="{StaticResource BaseTextBlockStyle}"/>
+                        <TabControl Style="{StaticResource TabControlPivotStyle}">
+                            <TabControl.Resources>
+                                <system:Double x:Key="PivotHeaderItemFontSize">12</system:Double>
+                                <Thickness x:Key="PivotHeaderItemMargin">0,0,12,0</Thickness>
+                            </TabControl.Resources>
+                            <TabControl.ItemContainerStyle>
+                                <Style TargetType="TabItem" BasedOn="{StaticResource PivotItemStyle}">
+                                    <Setter Property="Height" Value="24"/>
+                                </Style>
+                            </TabControl.ItemContainerStyle>
+                            <TabItem Header="精炼 1">
+                                <TextBlock
+                                    Text="{Binding SelectedWeapon.PassiveDescription.Level1}"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource BodyTextBlockStyle}"/>
+                            </TabItem>
+                            <TabItem Header="精炼 2">
+                                <TextBlock
+                                    Text="{Binding SelectedWeapon.PassiveDescription.Level2}"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource BodyTextBlockStyle}"/>
+                            </TabItem>
+                            <TabItem Header="精炼 3">
+                                <TextBlock
+                                    Text="{Binding SelectedWeapon.PassiveDescription.Level3}"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource BodyTextBlockStyle}"/>
+                            </TabItem>
+                            <TabItem Header="精炼 4">
+                                <TextBlock
+                                    Text="{Binding SelectedWeapon.PassiveDescription.Level4}"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource BodyTextBlockStyle}"/>
+                            </TabItem>
+                            <TabItem Header="精炼 5">
+                                <TextBlock
+                                    Text="{Binding SelectedWeapon.PassiveDescription.Level5}"
+                                    TextWrapping="Wrap"
+                                    Style="{StaticResource BodyTextBlockStyle}"/>
+                            </TabItem>
+                        </TabControl>
+                    </StackPanel>
+                </wu:Card>
+            </StackPanel>
+        </s:SmoothScrollViewer>
+    </Grid>
+</ui:Page>

@@ -1,0 +1,226 @@
+﻿<concurrent:AsyncPage
+    xmlns:concurrent="clr-namespace:DGP.Genshin.Control.Infrastructure.Concurrent"
+    x:Class="DGP.Genshin.Page.HomePage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:smoothscrollviewer="clr-namespace:DGP.Genshin.Control.Infrastructure.SmoothScrollViewer"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+    xmlns:converters="clr-namespace:DGP.Genshin.Control.Converter" 
+    xmlns:infrastructures="clr-namespace:DGP.Genshin.Control.Infrastructure"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:genshinelement="clr-namespace:DGP.Genshin.Control.GenshinElement"
+    xmlns:wu="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Title="HomePage">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OpenUICommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Page.Resources>
+        <converters:PercentageToHeightConverter x:Key="PercentageToHeightConverter" TargetWidth="1080" TargetHeight="390"/>
+    </Page.Resources>
+    <Grid>
+        <smoothscrollviewer:SmoothScrollViewer 
+            Padding="0,0,4,0"
+            Visibility="{Binding OpeningUI.IsWorking,Converter={StaticResource BooleanToVisibilityRevertConverter}}">
+            <StackPanel>
+                <wu:CardControl
+                    Margin="12,12,16,12"
+                    Background="Transparent"
+                    Title="Snap Genshin 已经停止维护 请尽快转移至 Snap Hutao"
+                    Subtitle="Snap Hutao 是 Snap Genshin 的次世代升级，有着更多的便利功能、更广泛的数据支持、更精美的动画过渡、更好的性能表现。">
+                    <wu:Hyperlink
+                        Padding="6"
+                        Foreground="Red"
+                        NavigateUri="https://github.com/DGP-Studio/Snap.Hutao">Snap Hutao 胡桃</wu:Hyperlink>
+                </wu:CardControl>
+                <wu:Card
+                    Margin="12,0,16,0"
+                    Background="Transparent">
+                    <TextBlock Text="{Binding Manifesto}" Style="{StaticResource BaseTextBlockStyle}"/>
+                </wu:Card>
+                <ItemsControl
+                    HorizontalAlignment="Stretch"
+                    ItemsSource="{Binding Announcement.List}" 
+                    Padding="0"
+                    Margin="12,12,0,-24"
+                    SnapsToDevicePixels="True">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock
+                                    Text="{Binding TypeLabel}"
+                                    Margin="0,0,0,12"
+                                    Style="{StaticResource TitleTextBlockStyle}"/>
+                                <ItemsControl
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{Binding List}" 
+                                    Margin="0,0,0,24"
+                                    SnapsToDevicePixels="True">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <infrastructures:DesiredWidthUniformGrid ColumnDesiredWidth="320"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border
+                                                Margin="0,0,12,12"
+                                                Padding="0"
+                                                x:Name="WidthBorder"
+                                                CornerRadius="{StaticResource CompatCornerRadius}" 
+                                                Background="{StaticResource SystemControlPageBackgroundAltHighBrush}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition Height="auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Border
+                                                        CornerRadius="{StaticResource CompatCornerRadiusTop}"
+                                                        RenderOptions.BitmapScalingMode="Fant"
+                                                        Height="{Binding Path=ActualWidth,ElementName=WidthBorder,Converter={StaticResource PercentageToHeightConverter}}">
+                                                        <Border.Background>
+                                                            <ImageBrush
+                                                                ImageSource="{Binding Banner}"
+                                                                Stretch="UniformToFill"/>
+                                                        </Border.Background>
+                                                        <Grid>
+                                                            <Border
+                                                                Height="16"
+                                                                HorizontalAlignment="Stretch"
+                                                                VerticalAlignment="Bottom"
+                                                                Visibility="{Binding ShouldShowTimeDescription,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                <Border.Background>
+                                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                                        <GradientStop Color="#00000000"/>
+                                                                        <GradientStop Offset="1" Color="#A0000000"/>
+                                                                    </LinearGradientBrush>
+                                                                </Border.Background>
+                                                            </Border>
+                                                            <Border
+                                                                CornerRadius="0,4,0,11.5"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Top"
+                                                                Background="{StaticResource SystemControlBackgroundAltMediumBrush}"
+                                                                Padding="8,4" 
+                                                                Visibility="{Binding ShouldShowTimeDescription,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{Binding TimeDescription}" />
+                                                            </Border>
+
+                                                            <ui:ProgressBar
+                                                                Height="2"
+                                                                MinHeight="2"
+                                                                Value="{Binding TimePercent,Mode=OneWay}"
+                                                                ui:ControlHelper.CornerRadius="0"
+                                                                Visibility="{Binding ShouldShowTimePercent,Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                                                Maximum="1"
+                                                                VerticalAlignment="Bottom"
+                                                                Background="Transparent"/>
+                                                        </Grid>
+                                                    </Border>
+                                                    <Border
+                                                        Grid.Row="1"
+                                                        CornerRadius="{StaticResource CompatCornerRadiusBottom}">
+                                                        <StackPanel Margin="4" VerticalAlignment="Bottom">
+                                                            <Grid Margin="2,6,0,0" HorizontalAlignment="Stretch">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition Width="auto"/>
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <TextBlock
+                                                                    Text="{Binding Subtitle}"
+                                                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                                                    TextWrapping="NoWrap"
+                                                                    TextTrimming="WordEllipsis" />
+                                                                <Button
+                                                                    x:Name="OpenAnnouncementButton"
+                                                                    Content="&#xE8A7;" 
+                                                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Stretch" 
+                                                                    Grid.Column="1"
+                                                                    Background="Transparent"
+                                                                    Visibility="Hidden"
+                                                                    Command="{Binding OpenAnnouncementUICommand}"
+                                                                    CommandParameter="{Binding Content}"/>
+                                                            </Grid>
+                                                            <TextBlock
+                                                                Text="{Binding Title}"
+                                                                Style="{StaticResource BodyTextBlockStyle}" 
+                                                                TextWrapping="NoWrap"
+                                                                TextTrimming="WordEllipsis"
+                                                                Margin="2,12,0,0"
+                                                                Opacity="0.6"/>
+                                                            <TextBlock
+                                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                                FontSize="10"
+                                                                Opacity="0.4"
+                                                                Margin="2,4,0,0">
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding StringFormat="{}{0:yyyy.MM.dd HH:mm} - {1:yyyy.MM.dd HH:mm}">
+                                                                        <Binding Path="StartTime"/>
+                                                                        <Binding Path="EndTime"/>
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                                <Border.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseEnter">
+                                                        <EventTrigger.Actions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OpenAnnouncementButton" Storyboard.TargetProperty="Visibility">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0">
+                                                                            <DiscreteObjectKeyFrame.Value>
+                                                                                <Visibility>Visible</Visibility>
+                                                                            </DiscreteObjectKeyFrame.Value>
+                                                                        </DiscreteObjectKeyFrame>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger.Actions>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseLeave">
+                                                        <EventTrigger.Actions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OpenAnnouncementButton" Storyboard.TargetProperty="Visibility">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0">
+                                                                            <DiscreteObjectKeyFrame.Value>
+                                                                                <Visibility>Hidden</Visibility>
+                                                                            </DiscreteObjectKeyFrame.Value>
+                                                                        </DiscreteObjectKeyFrame>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger.Actions>
+                                                    </EventTrigger>
+                                                </Border.Triggers>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </smoothscrollviewer:SmoothScrollViewer>
+        <Border
+            Visibility="{Binding OpeningUI.IsWorking,Converter={StaticResource BooleanToVisibilityConverter}}">
+            <genshinelement:ElementsProgressBar
+                IsIndeterminate="True"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</concurrent:AsyncPage>
